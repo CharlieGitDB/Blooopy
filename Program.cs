@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Blooopy.Data;
+using Microsoft.EntityFrameworkCore;
+using Blooopy.Models;
+using Blooopy.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +11,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
+
+builder.Services.AddDbContextFactory<BlooopContext>(o =>
+{
+   o.UseSqlite($"Data Source=${nameof(BlooopContext.Blooops)}.db");
+});
+
+builder.Services.AddTransient<BlooopService>();
 
 var app = builder.Build();
 
@@ -17,6 +27,13 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+}
+else
+{
+    await using var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateAsyncScope();
+    var options = scope.ServiceProvider.GetRequiredService<DbContextOptions<BlooopContext>>();
+    await DatabaseUtility.EnsureDbCreatedAndSeed(options, 15);
+
 }
 
 app.UseHttpsRedirection();

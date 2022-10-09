@@ -291,3 +291,7 @@ paket-files/
 **/obj
 /bin
 /obj
+
+$Blooops.db
+$Blooops.db-shm
+$Blooops.db-wal
