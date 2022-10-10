@@ -1,9 +1,71 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+@inject NavigationManager Navigation
+@inject BlooopService BlooopService
+
+<PageTitle>Blooopy</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
+
+@if (Loading)
+{
+    <h2>Loading...</h2>
+}
+else
+{
+    @if (Blooops is not null)
+    {
+        <ul>
+            @foreach (var blooop in Blooops)
+            {
+                <li>
+                    <span @onclick="@(() => GoToBlooop(@blooop.Id))">@blooop.Id - @blooop.Text</span>
+
+                    @if (blooop.Comments is not null)
+                    {
+                        <ul>
+                            @foreach (var comment in blooop.Comments)
+                            {
+                                <li>@comment.Text</li>
+                            }
+                        </ul>
+                    }
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div>No blooops</div>
+    }
+}
+
+
+@code {
+    private bool Loading { get; set; }
+
+    private List<Blooop>? Blooops { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadAsync();
+    }
+
+    private async Task ReloadAsync()
+    {
+        Loading = true;
+        Blooops = new List<Blooop>();
+        Blooops = await BlooopService.GetAllAsync();
+        Loading = false;
+    }
+
+    private void GoToBlooop(int blooopId)
+    {
+        Navigation.NavigateTo($"/b/{blooopId}");
+        return;
+    }
+}
