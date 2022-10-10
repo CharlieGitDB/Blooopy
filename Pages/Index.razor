@@ -1,8 +1,9 @@
 ﻿@page "/"
 
-@inject BlooopService blooopService
+@inject NavigationManager Navigation
+@inject BlooopService BlooopService
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Blooopy</PageTitle>
 
 <h1>Hello, world!</h1>
 
@@ -22,7 +23,7 @@ else
             @foreach (var blooop in Blooops)
             {
                 <li>
-                    @blooop.Id - @blooop.Text
+                    <span @onclick="@(() => GoToBlooop(@blooop.Id))">@blooop.Id - @blooop.Text</span>
 
                     @if (blooop.Comments is not null)
                     {
@@ -58,7 +59,13 @@ else
     {
         Loading = true;
         Blooops = new List<Blooop>();
-        Blooops = await blooopService.GetAllAsync();
+        Blooops = await BlooopService.GetAllAsync();
         Loading = false;
+    }
+
+    private void GoToBlooop(int blooopId)
+    {
+        Navigation.NavigateTo($"/b/{blooopId}");
+        return;
     }
 }

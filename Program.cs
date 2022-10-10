@@ -10,7 +10,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddDbContextFactory<BlooopContext>(o =>
 {
@@ -33,7 +32,6 @@ else
     await using var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateAsyncScope();
     var options = scope.ServiceProvider.GetRequiredService<DbContextOptions<BlooopContext>>();
     await DatabaseUtility.EnsureDbCreatedAndSeed(options, 15);
-
 }
 
 app.UseHttpsRedirection();

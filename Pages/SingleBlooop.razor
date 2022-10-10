@@ -1,0 +1,42 @@
+@page "/b/{BlooopId:int}"
+
+@inject BlooopService blooopService
+
+<PageTitle>Blooop</PageTitle>
+
+<h1>Blooop</h1>
+
+@if (Loading)
+{
+    <h2>Loading...</h2>
+}
+else
+{
+    <div>@blooop?.Id - @blooop?.Text</div>
+}
+
+
+@code {
+    [Parameter]
+    public int BlooopId { get; set; }
+    private bool Loading { get; set; }
+    private Blooop? blooop;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await ReloadAsync();
+        await base.OnParametersSetAsync();
+    }
+
+    private async Task ReloadAsync()
+    {
+        Loading = true;
+        blooop = await blooopService.GetByIdAsync(BlooopId);
+        Loading = false;
+    }
+}
